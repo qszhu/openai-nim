@@ -92,8 +92,14 @@ proc createCompletion*(self: OpenAi, model: string,
 # Chat
 
 type
+  ChatRole* {.pure.} = enum
+    System = "system"
+    User = "user"
+    Assistant = "assistant"
+
   ChatMessage* = object
-    role*, content*: string
+    role*: ChatRole
+    content*: string
 
 proc createChatCompletion*(self: OpenAi, model: string, messages: seq[ChatMessage],
   temperature: float = 1,
