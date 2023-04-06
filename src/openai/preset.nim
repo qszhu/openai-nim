@@ -52,6 +52,19 @@ proc newChatSession*(examples: seq[string],
   result.messages = examples
   result.systemMessage = systemMessage
 
+type
+  ChatSessionSamples = object
+    system: string
+    samples: seq[tuple[prompt: string, completion: string]]
+
+proc newChatSession*(jsonFileName: string): ChatSession =
+  let css = jsonFileName.readFile.parseJson.to(ChatSessionSamples)
+  var samples = newSeq[string]()
+  for sample in css.samples:
+    samples.add sample.prompt
+    samples.add sample.completion
+  newChatSession(samples, systemMessage = css.system)
+
 proc getPrompt(self: ChatSession): seq[ChatMessage] =
   # TODO: limit number of tokens
   result = newSeq[ChatMessage]()
