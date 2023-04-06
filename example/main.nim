@@ -52,8 +52,11 @@ proc main() {.async.} =
 
   addHandler(newConsoleLogger(levelThreshold = lvlDebug))
 
-  let res = await openai.translate("Hello!", "english", "french")
-  echo res
+  # let res = await openai.translate("Hello!", "english", "french")
+  # echo res
+
+  let res = await openai.embeddings("The food was delicious and the waiter...")
+  echo res.len
 
 when isMainModule:
   waitFor main()
