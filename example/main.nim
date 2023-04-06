@@ -55,8 +55,20 @@ proc main() {.async.} =
   # let res = await openai.translate("Hello!", "english", "french")
   # echo res
 
-  let res = await openai.embeddings("The food was delicious and the waiter...")
-  echo res.len
+  # let res = await openai.embeddings("The food was delicious and the waiter...")
+  # echo res.len
+
+  var session = newChatSession(@[
+    "Who won the world series in 2020?",
+    "The Los Angeles Dodgers won the World Series in 2020."
+  ])
+  while true:
+    stdout.write "input> "
+    let question = stdin.readLine
+    if question.len == 0: break
+
+    let res = await openai.userInput(session, question)
+    echo res
 
 when isMainModule:
   waitFor main()
