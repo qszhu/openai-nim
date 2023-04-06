@@ -2,6 +2,7 @@ import std/[
   asyncdispatch,
   httpclient,
   json,
+  logging,
   os,
 ]
 
@@ -10,6 +11,7 @@ load()
 
 
 import ../src/openai
+import ../src/openai/preset
 
 
 proc main() {.async.} =
@@ -23,7 +25,7 @@ proc main() {.async.} =
 
   # echo (await openai.listModels).pretty
 
-  echo (await openai.retrieveModel("text-davinci-003")).pretty
+  # echo (await openai.retrieveModel("text-davinci-003")).pretty
 
   # echo (await openai.createCompletion(
   #   model = "text-davinci-003",
@@ -47,6 +49,11 @@ proc main() {.async.} =
   #   model = "text-embedding-ada-002",
   #   input = "The food was delicious and the waiter...",
   # )).pretty
+
+  addHandler(newConsoleLogger(levelThreshold = lvlDebug))
+
+  let res = await openai.translate("Hello!", "english", "french")
+  echo res
 
 when isMainModule:
   waitFor main()
