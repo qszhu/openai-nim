@@ -14,13 +14,14 @@ const HOST = parseUri("https://api.openai.com/v1")
 
 type
   OpenAi* = ref object
-    apiKey, organization: string
+    apiKey, organization, user: string
     proxy: Proxy
 
-proc newOpenAi*(apiKey: string, organization = "", proxy: Proxy = nil): OpenAi =
+proc newOpenAi*(apiKey: string, organization = "", user = "", proxy: Proxy = nil): OpenAi =
   result.new
   result.apiKey = apiKey
   result.organization = organization
+  result.user = user
   result.proxy = proxy
 
 proc newClient(self: OpenAi): AsyncHttpClient =
@@ -62,7 +63,7 @@ proc createCompletion*(self: OpenAi, model: string,
   frequency_penalty: float = 0,
   best_of: int = 1,
   logit_bias: Table[string, float] = initTable[string, float](),
-  user: string = "",
+  user: string = self.user,
 ): Future[JsonNode] {.async.} =
   var client = self.newClient
   let url = HOST / "completions"
@@ -111,7 +112,7 @@ proc createChatCompletion*(self: OpenAi, model: string, messages: seq[ChatMessag
   presence_penalty: float = 0,
   frequency_penalty: float = 0,
   logit_bias: Table[string, float] = initTable[string, float](),
-  user: string = "",
+  user: string = self.user,
 ): Future[JsonNode] {.async.} =
   var client = self.newClient
   let url = HOST / "chat" / "completions"
@@ -168,7 +169,7 @@ proc createEdit*(self: OpenAi, model: string, instruction: string,
 # Embeddings
 
 proc createEmbeddings*(self: OpenAi, model: string, input: string, # TODO: seq[string], seq[seq[string]]
-  user: string = ""
+  user: string = self.user
 ): Future[JsonNode] {.async.} =
   var client = self.newClient
   let url = HOST / "embeddings"
