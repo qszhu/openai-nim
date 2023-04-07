@@ -1,9 +1,11 @@
 import std/[
+  algorithm,
   asyncdispatch,
   json,
   logging,
   sequtils,
   strformat,
+  strutils,
   unicode,
 ]
 
@@ -25,9 +27,13 @@ proc translate*(self: OpenAi, text, fromLang, toLang: string,
 
   return res["choices"][0]["message"]["content"].getStr # TODO: multiple choices
 
+
+
+type Embeddings = seq[float]
+
 proc embeddings*(self: OpenAi, text: string,
   model = "text-embedding-ada-002",
-): Future[seq[float]] {.async.} =
+): Future[Embeddings] {.async.} =
   let res = await self.createEmbeddings(
     model = model,
     input = text,
@@ -37,6 +43,8 @@ proc embeddings*(self: OpenAi, text: string,
   return res["data"][0]["embedding"].getElems.mapIt(it.getFloat)
 
 
+
+# Chat
 
 type
   ChatSession* = ref object
@@ -88,3 +96,43 @@ proc userInput*(self: OpenAi, session: ChatSession, content: string,
 
   result = res["choices"][0]["message"]["content"].getStr # TODO: multiple choices
   session.messages.add result
+
+
+
+# QA
+
+type
+  EmbeddingsDB* = ref object of RootObj
+  QueryResult* = seq[tuple[text: string, score: float]]
+
+method query*(self: EmbeddingsDB, input: Embeddings, limit = 5): QueryResult {.base.} =
+  discard
+
+proc createQAContext(queryResult: QueryResult, maxLen = 1800): string =
+  let res = queryResult.sortedByIt(1 - it.score)
+  for r in res:
+    if result.len + r.text.len > maxLen: break
+    result &= r.text
+
+proc answerQuestion*(self: OpenAi, db: EmbeddingsDB, question: string,
+  model = "gpt-3.5-turbo",
+  promptTmpl = """Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}"""
+): Future[string] {.async.} =
+  let
+    questionEmbeddings = await self.embeddings(question)
+    queryResult = db.query(questionEmbeddings)
+    context = createQAContext(queryResult)
+    prompt = promptTmpl.replace("{context}", context)
+    messages = @[
+      ChatMessage(role: System, content: prompt),
+      ChatMessage(role: User, content: question),
+    ]
+  logging.debug "prompt: ", messages
+
+  let res = await self.createChatCompletion(
+    model = model,
+    messages = messages
+  )
+  logging.debug "response: ", res
+
+  result = res["choices"][0]["message"]["content"].getStr # TODO: multiple choices

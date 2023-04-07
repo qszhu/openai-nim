@@ -69,6 +69,7 @@ proc main() {.async.} =
 
     let res = await openai.userInput(session, question)
     echo res
+    echo ""
 
 when isMainModule:
   waitFor main()
