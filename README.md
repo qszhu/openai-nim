@@ -33,4 +33,4 @@
   * [x] list fine-tune events
   * [x] delete fine-tune model
 * Moderations
-  * [ ] create moderation
+  * [x] create moderation

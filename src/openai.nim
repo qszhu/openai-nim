@@ -314,4 +314,16 @@ proc deleteFineTuneModel*(self: OpenAi, model: string): Future[JsonNode] {.async
 
 # Moderations
 
-# proc createModeration*(self: OpenAi)
+proc createModeration*(self: OpenAi, input: string,
+  model = "text-moderation-latest",
+): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "moderations"
+
+  var body = %*{
+    "input": input,
+    "model": model,
+  }
+
+  let resp = await client.post(url, $body)
+  result = (await resp.body).parseJson

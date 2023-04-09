@@ -50,7 +50,7 @@ proc main() {.async.} =
   #   input = "The food was delicious and the waiter...",
   # )).pretty
 
-  # addHandler(newConsoleLogger(levelThreshold = lvlDebug))
+  addHandler(newConsoleLogger(levelThreshold = lvlDebug))
 
   # let res = await openai.translate("Hello!", "english", "french")
   # echo res
@@ -98,6 +98,8 @@ proc main() {.async.} =
   # echo (await openai.listFineTuneEvents(fine_tune_id)).pretty
 
   # echo (await openai.deleteFineTuneModel(model)).pretty
+
+  # echo (await openai.createModeration("I want to kill myself.")).pretty
 
 when isMainModule:
   waitFor main()
