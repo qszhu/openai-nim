@@ -50,7 +50,7 @@ proc main() {.async.} =
   #   input = "The food was delicious and the waiter...",
   # )).pretty
 
-  addHandler(newConsoleLogger(levelThreshold = lvlDebug))
+  # addHandler(newConsoleLogger(levelThreshold = lvlDebug))
 
   # let res = await openai.translate("Hello!", "english", "french")
   # echo res
@@ -58,18 +58,28 @@ proc main() {.async.} =
   # let res = await openai.embeddings("The food was delicious and the waiter...")
   # echo res.len
 
-  var session = newChatSession(@[
-    "Who won the world series in 2020?",
-    "The Los Angeles Dodgers won the World Series in 2020."
-  ])
-  while true:
-    stdout.write "input> "
-    let question = stdin.readLine
-    if question.len == 0: break
+  # var session = newChatSession(@[
+  #   "Who won the world series in 2020?",
+  #   "The Los Angeles Dodgers won the World Series in 2020."
+  # ])
+  # while true:
+  #   stdout.write "input> "
+  #   let question = stdin.readLine
+  #   if question.len == 0: break
 
-    let res = await openai.userInput(session, question)
-    echo res
-    echo ""
+  #   let res = await openai.userInput(session, question)
+  #   echo res
+  #   echo ""
+
+  # echo (await openai.uploadFile("finetune.json")).pretty
+
+  echo (await openai.listFiles).pretty
+
+  # echo (await openai.retrieveFile("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
+
+  # echo (await openai.retrieveFileContent("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
+
+  # echo (await openai.deleteFile("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
 
 when isMainModule:
   waitFor main()

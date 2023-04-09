@@ -116,7 +116,10 @@ proc createQAContext(queryResult: QueryResult, maxLen = 1800): string =
 
 proc answerQuestion*(self: OpenAi, db: EmbeddingsDB, question: string,
   model = "gpt-3.5-turbo",
-  promptTmpl = """Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}"""
+  promptTmpl = """Answer the question based on the context below, and if the question can't be answered based on the context, say "I don't know"
+
+Context: {context}
+""",
 ): Future[string] {.async.} =
   let
     questionEmbeddings = await self.embeddings(question)

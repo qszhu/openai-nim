@@ -191,15 +191,46 @@ proc createEmbeddings*(self: OpenAi, model: string, input: string, # TODO: seq[s
 
 # Files
 
-# proc listFiles*(self: OpenAi)
+proc listFiles*(self: OpenAi): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "files"
 
-# proc uploadFile*(self: OpenAi)
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
 
-# proc deleteFile*(self: OpenAi)
+proc uploadFile*(self: OpenAi, fileName: string,
+  purpose = "fine-tune",
+): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "files"
 
-# proc retrieveFile*(self: OpenAi)
+  var form = newMultipartData()
+  form.addFiles({ "file": fileName })
+  form["purpose"] = purpose
 
-# proc retrieveFileContent*(self: OpenAi)
+  let resp = await client.post(url, multipart = form)
+  result = (await resp.body).parseJson
+
+proc deleteFile*(self: OpenAi, file_id: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "files" / file_id
+
+  let resp = await client.delete(url)
+  result = (await resp.body).parseJson
+
+proc retrieveFile*(self: OpenAi, file_id: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "files" / file_id
+
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
+
+proc retrieveFileContent*(self: OpenAi, file_id: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "files" / file_id / "content"
+
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
 
 # Fine-tunes
 

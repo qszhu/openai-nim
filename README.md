@@ -20,11 +20,11 @@
   * [ ] create transcription
   * [ ] create translation
 * Files
-  * [ ] list files
-  * [ ] update file
-  * [ ] delete file
-  * [ ] retrieve file
-  * [ ] retrieve file content
+  * [x] list files
+  * [x] update file
+  * [x] delete file
+  * [x] retrieve file
+  * [x] retrieve file content
 * Fine-tunes
   * [ ] create fine-tune
   * [ ] list fine-tunes
