@@ -10,3 +10,4 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.6.0"
+requires "nimpy >= 0.2.0"
