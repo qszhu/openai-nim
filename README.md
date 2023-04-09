@@ -26,11 +26,11 @@
   * [x] retrieve file
   * [x] retrieve file content
 * Fine-tunes
-  * [ ] create fine-tune
-  * [ ] list fine-tunes
-  * [ ] retrieve fine-tune
-  * [ ] cancel fine-tune
-  * [ ] list fine-tune events
-  * [ ] delete fine-tune model
+  * [x] create fine-tune
+  * [x] list fine-tunes
+  * [x] retrieve fine-tune
+  * [x] cancel fine-tune
+  * [x] list fine-tune events
+  * [x] delete fine-tune model
 * Moderations
   * [ ] create moderation

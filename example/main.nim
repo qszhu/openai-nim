@@ -71,15 +71,33 @@ proc main() {.async.} =
   #   echo res
   #   echo ""
 
-  # echo (await openai.uploadFile("finetune.json")).pretty
+  # echo (await openai.uploadFile("finetune.jsonl")).pretty
 
-  echo (await openai.listFiles).pretty
+  # let file_id = "file-kxAy89zcGppuL2YHoyhkyoNp"
 
-  # echo (await openai.retrieveFile("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
+  # echo (await openai.listFiles).pretty
 
-  # echo (await openai.retrieveFileContent("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
+  # echo (await openai.retrieveFile(file_id)).pretty
 
-  # echo (await openai.deleteFile("file-alPRPxuqLkFWXsusD2OoqKWB")).pretty
+  # echo (await openai.retrieveFileContent(file_id)).pretty
+
+  # echo (await openai.deleteFile(file_id)).pretty
+
+  # echo (await openai.createFineTune(file_id)).pretty
+
+  # let fine_tune_id = "ft-skbcfX2OdX30qk0mLTb4GaH5"
+
+  echo (await openai.listFineTunes).pretty
+
+  # echo (await openai.retrieveFineTune(fine_tune_id)).pretty
+
+  # let model = "curie:ft-personal-2023-04-09-14-57-40"
+
+  # echo (await openai.cancelFineTune(fine_tune_id)).pretty
+
+  # echo (await openai.listFineTuneEvents(fine_tune_id)).pretty
+
+  # echo (await openai.deleteFineTuneModel(model)).pretty
 
 when isMainModule:
   waitFor main()

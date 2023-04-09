@@ -234,17 +234,83 @@ proc retrieveFileContent*(self: OpenAi, file_id: string): Future[JsonNode] {.asy
 
 # Fine-tunes
 
-# proc createFineTune*(self: OpenAi)
+proc createFineTune*(self: OpenAi, training_file: string,
+  validation_file: Option[string] = none(string),
+  model: string = "curie",
+  n_epochs: int = 4,
+  batch_size: Option[int] = none(int),
+  learning_rate_multiplier: Option[int] = none(int),
+  prompt_loss_weight: float = 0.01,
+  compute_classification_metrics: bool = false,
+  classification_n_classes: Option[int] = none(int),
+  classification_positive_class: Option[string] = none(string),
+  classification_betas: Option[seq[float]] = none(seq[float]),
+  suffix: Option[string] = none(string),
+): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "fine-tunes"
 
-# proc listFineTunes*(self: OpenAi)
+  var body = %*{
+    "training_file": training_file,
+    "model": model,
+    "n_epochs": n_epochs,
+    "prompt_loss_weight": prompt_loss_weight,
+    "compute_classification_metrics": compute_classification_metrics,
+  }
+  if validation_file.isSome:
+    body{"validation_file"} = %validation_file.get
+  if batch_size.isSome:
+    body{"batch_size"} = %batch_size.get
+  if learning_rate_multiplier.isSome:
+    body{"learning_rate_multiplier"} = %learning_rate_multiplier.get
+  if classification_n_classes.isSome:
+    body{"classification_n_classes"} = %classification_n_classes.get
+  if classification_positive_class.isSome:
+    body{"classification_positive_class"} = %classification_positive_class.get
+  if classification_betas.isSome:
+    body{"classification_betas"} = %classification_betas.get
+  if suffix.isSome:
+    body{"suffix"} = %suffix.get
 
-# proc retrieveFineTune*(self: OpenAi)
+  let resp = await client.post(url, $body)
+  result = (await resp.body).parseJson
 
-# proc cancelFineTune*(self: OpenAi)
+proc listFineTunes*(self: OpenAi): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "fine-tunes"
 
-# proc listFineTuneEvents*(self: OpenAi)
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
 
-# proc deleteFineTuneModel*(self: OpenAi)
+proc retrieveFineTune*(self: OpenAi, fine_tune_id: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "fine-tunes" / fine_tune_id
+
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
+
+proc cancelFineTune*(self: OpenAi, fine_tune_id: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "fine-tunes" / fine_tune_id / "cancel"
+
+  let resp = await client.post(url)
+  result = (await resp.body).parseJson
+
+proc listFineTuneEvents*(self: OpenAi, fine_tune_id: string,
+  stream: bool = false,
+): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "fine-tunes" / fine_tune_id / "events" ? { "stream": $stream }
+
+  let resp = await client.get(url)
+  result = (await resp.body).parseJson
+
+proc deleteFineTuneModel*(self: OpenAi, model: string): Future[JsonNode] {.async.} =
+  var client = self.newClient
+  let url = HOST / "models" / model
+
+  let resp = await client.delete(url)
+  result = (await resp.body).parseJson
 
 # Moderations
 
